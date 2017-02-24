@@ -1,0 +1,28 @@
+{
+  "name": "homebrew.io",
+  "version": "0.0.0",
+  "description": "A small homebrew manager for tabletob RPG games",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fataku/homebrew.io.git"
+  },
+  "author": "Dmitri Kolytchev",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/fataku/homebrew.io/issues"
+  },
+  "homepage": "https://github.com/fataku/homebrew.io#readme",
+  "dependencies": {
+    "async": "^2.1.5",
+    "bcrypt": "^1.0.2",
+    "client-sessions": "^0.7.0",
+    "crypto": "0.0.3",
+    "express": "^4.14.1",
+    "mongodb": "^2.2.24",
+    "underscore": "^1.8.3"
+  }
+}
