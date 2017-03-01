@@ -26,60 +26,142 @@ app.use(function DatabaseChecker(req, res, next){
 	}else next();
 })
 
+app.use(session({
+	cookieName: 'homebrew-session',
+	secret: config.session.secret,
+	duration: config.session.duration,
+	activeDuration: config.session.activeDuration,
+}));
+
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/static/index.html');
 });
 
-
-app.get('/register', function(req, res){
-
-});
-
-
 app.post('/register', function(req, res){
-
+	// TODO: capcha and whatnot
 });
 
+app.post('/login', function(req, res){
+	var query = {email:req.body.user};
 
-app.get('/login', function(req, res){
-});
-
-
-app.post('/login', function(req, res){});
-
-app.get('/user/:id', function(req, res){
-	console.log(req.params);
-	db.collection('users').findOne({_id:ObjectId(parseInt(req.params.id))}, function(err, user){
-		if(!err && user){
-			res.status(200).send(_.omit(user, ['password', 'preferences'].concat(user.preferences.hiddenInfo)))
-		}else res.status(404).send({error:404});
-		console.log(err, user);
+	db.collection('users').findOne(query, function(err, user){
+		if(err)
+			res.status(400).send(err);
+		else if(user.password == hash(req.body.password))
+			res.status(200).send(_.omit(user, 'password'));
+		else
+			res.status(400).send({error: 'invalid credentials'})
 	});
 });
-app.get('/user/items', function(req, res){});
-app.get('/user/stories', function(req, res){});
-app.get('/user/characters', function(req, res){});
 
-app.get('/tags', function(req, res){});
-app.get('/tag/:tag', function(req, res){});
 
-app.get('/items', function(req, res){});
-app.get('/item/:id', function(req, res){});
-app.put('/item/:id', function(req, res){});
-app.post('/item/:id', function(req, res){});
-app.delete('/item/:id', function(req, res){});
 
-app.get('/stories', function(req, res){});
-app.get('/story/:id', function(req, res){});
-app.put('/story/:id', function(req, res){});
-app.post('/story/:id', function(req, res){});
-app.delete('/story/:id', function(req, res){});
+app.get('/me', function(req, res){
+	// TODO: Current session's user info
+	// TODO: if not logged in redirect to login
+});
+app.get('/me/posts', function(req, res){
+	// TODO: Current user's creations
+});
 
-app.get('/characters', function(req, res){});
-app.get('/character/:id', function(req, res){});
-app.put('/character/:id', function(req, res){});
-app.post('/character/:id', function(req, res){});
-app.delete('/character/:id', function(req, res){});
+
+
+app.get('/:collection(user|post)/:id', function(req, res){
+	// get user/post by id
+	var collection = {
+		user:'users',
+		post:'posts'
+	}[req.params.collection];
+
+	if(!collection)
+		return res.status(400).send({error:400})
+
+	var query = {slug:req.params.id};
+	if(/^[a-zA-Z0-9]{24}$/.test(req.params.id))
+		query = {_id:ObjectId(req.params.id)};
+
+	db.collection(collection).findOne(query, function(err, entity){
+		if(err)
+			res.status(400).send(err);
+		else if(entity)
+			res.status(200).send(_.omit(entity, ['password', 'preferences'].concat(user.preferences.hiddenInfo)))
+		else
+			res.status(404).send({error:404});
+	});
+});
+
+
+
+
+app.get('/posts/:id/related', function(req, res){
+
+	var sequence = [];
+
+	if(!/^[a-zA-Z0-9]{24}$/.test(req.params.id))
+		sequence.push(function(){
+
+		});
+	sequence.push();
+	db.collection('posts').find(query, function(err, posts){
+
+	})
+});
+
+app.get('/tags', function(req, res){
+	// TODO: get all tags
+	/*db.collection('posts').aggregate([
+		{ "$project": { "hashtags":1 }},  
+		{ "$unwind": "$hashtags" },  
+		{ "$group": { "_id": "$hashtags", "count": { "$sum": 1 } }}  
+	])//*/
+	// from : http://stackoverflow.com/questions/22926040/count-tags-in-tag-array-in-a-mongodb-document-inside-a-collection
+});
+
+app.get('/tags/:filter([a-zA-Z0-9\-\_\.\+\,]+)', function(req, res){
+	// TODO: get filtered tags
+});
+
+app.get('/tagged/:search([a-zA-Z0-9\-\_\.\+\,]+)', function(req, res){
+	var tags = req.params.search.split(','),
+		match = [],
+		unmatch = [],
+		pre = '^', post = '$'
+	for(var tag of tags){
+		var target;
+		
+		if(tag.startsWith('-')){
+			tag = tag.substring(1);
+			target = unmatch;
+		} else
+			target = match;
+
+		if(tag.startsWith("*")){
+			tag = tag.substring(1);
+			pre = '';
+		}
+
+		if(tag.endsWith("*")){
+			tag = tag.substring(0, tag.length-1);
+			post = '';
+		}
+
+		tag = tag.replace(/\*/gi, '(.+)');
+		target.push(new RegExp(pre + tag + post));
+	}
+
+	db.collection('posts').find({
+		$and:[
+			{tags : {$in:match}},
+			{tags : {$nin:unmatch}}
+		]
+	}, function(err, posts){
+		if(err)
+			res.status(400).send(err);
+		else
+			res.status(200).send(posts);
+	})
+	// TODO: build "and" and "not" structure from tags
+});
 
 
 app.use(express.static(__dirname + '/static'));
