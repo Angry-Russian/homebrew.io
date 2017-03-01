@@ -54,8 +54,6 @@ app.post('/login', function(req, res){
 	});
 });
 
-
-
 app.get('/me', function(req, res){
 	// TODO: Current session's user info
 	// TODO: if not logged in redirect to login
@@ -63,8 +61,6 @@ app.get('/me', function(req, res){
 app.get('/me/posts', function(req, res){
 	// TODO: Current user's creations
 });
-
-
 
 app.get('/:collection(user|post)/:id', function(req, res){
 	// get user/post by id
@@ -90,20 +86,13 @@ app.get('/:collection(user|post)/:id', function(req, res){
 	});
 });
 
-
-
-
-app.get('/posts/:id/related', function(req, res){
-
-	var sequence = [];
-
-	if(!/^[a-zA-Z0-9]{24}$/.test(req.params.id))
-		sequence.push(function(){
-
-		});
-	sequence.push();
+app.get('/posts/:id([a-zA-Z0-9]{24})/related', function(req, res){
+	var query = {parent:req.params.id};
 	db.collection('posts').find(query, function(err, posts){
-
+		if(err)
+			res.status(500).send(err);
+		else
+			res.status(200).send(posts);
 	})
 });
 
@@ -162,7 +151,6 @@ app.get('/tagged/:search([a-zA-Z0-9\-\_\.\+\,]+)', function(req, res){
 	})
 	// TODO: build "and" and "not" structure from tags
 });
-
 
 app.use(express.static(__dirname + '/static'));
 
