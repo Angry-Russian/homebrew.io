@@ -4,6 +4,7 @@
   "description": "A small homebrew manager for tabletob RPG games",
   "main": "app.js",
   "scripts": {
+    "start": "lessc style.less static/style.less.css && mongod --dbpath=./data --smallfiles & node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +23,7 @@
     "client-sessions": "^0.7.0",
     "crypto": "0.0.3",
     "express": "^4.14.1",
+    "less": "^2.7.2",
     "mongodb": "^2.2.24",
     "underscore": "^1.8.3"
   }

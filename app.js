@@ -26,7 +26,7 @@ app.use(function DatabaseChecker(req, res, next){
 	}else next();
 })
 
-app.use(session({
+app.use(sessions({
 	cookieName: 'homebrew-session',
 	secret: config.session.secret,
 	duration: config.session.duration,
@@ -158,6 +158,30 @@ app.use(function(req, res, next){
 	res.status(404).send("404 - Not found");
 });
 
-http.listen(config.port, function(){
-	console.log('Listening on port', config.port);
+var server =  app.listen(config.port, function(){
+	
+	var os = require('os');
+	var ifaces = os.networkInterfaces();
+
+	Object.keys(ifaces).forEach(function (ifname) {
+		var alias = 0;
+
+		ifaces[ifname].forEach(function (iface) {
+			if ('IPv4' !== iface.family || iface.internal !== false) {
+				// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+				return;
+			}
+
+			if (alias >= 1) {
+				// this single interface has multiple ipv4 addresses
+				console.log(ifname + ':' + alias, iface.address);
+			} else {
+				// this interface has only one ipv4 adress
+				console.log(ifname, iface.address);
+			}
+			++alias;
+		});
+	});
+	
+	console.log('Server', server.address().address, 'Listening on port', server.address().port);
 });

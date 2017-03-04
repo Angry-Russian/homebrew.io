@@ -2,5 +2,8 @@ module.exports = {
 	port: 0,
 	db:{
 		uri: ''
+		
+	}, session:{
+		secret: ''
 	}
 };
