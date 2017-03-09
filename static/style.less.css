@@ -211,6 +211,7 @@ footer {
   margin: auto;
 }
 #editor {
+  z-index: 10;
   position: fixed;
   overflow: auto;
   top: 0;
@@ -228,4 +229,17 @@ footer {
   border: 0;
   border-radius: 2px;
   box-shadow: black 0 -4px 0 1px;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.button-list li {
+  width: 100%;
+  background: #ddd;
+  /*background: rgba(255, 170, 0, 0.5);*/
+}
+.button-list button {
+  border: 0;
+  background: transparent;
 }

@@ -8,17 +8,35 @@
 <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.4.2/css/froala_editor.min.css' rel='stylesheet' type='text/css' />
 <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.4.2/css/froala_style.min.css' rel='stylesheet' type='text/css' />
 <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" name="default stylesheet"/>
-<link rel="stylesheet" href="style.css" name="default stylesheet"/>
+<link rel="stylesheet" href="http://mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css" />
+<link rel="stylesheet" href="style.less.css" name="default stylesheet"/>
 
 <!-- WISYWIG JS file. -->
 <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.4.2/js/froala_editor.min.js'></script>
 <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
 <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="http://mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>	
 <script type="text/javascript" src="script.js"></script>
 
 </head>
 <body ng-controller="homebrewController">
+	<div id="editor" ng-show="showEditor" class="ng-hide ng-animate">
+		<div class="container">
+			<input id="title" placeholder="Title" class="col-twelve fr"/>
+			<textarea></textarea>
+		</div>
+		<div class="container">
+			<tags-input ng-model="tags" add-on-paste="true">
+				<auto-complete source="loadTags($query)"></auto-complete>
+			</tags-input>
+		</div>
+		<ul class="container button-list">
+			<li><label><input type="checkbox"/></label></li>
+			<li><button>Submit</button></li>
+			<li><button>Cancel</button></li>
+		</ul>
+	</div>
 	<header>
 		<div>
 			<form id="login" ng-if="isLoggedIn">

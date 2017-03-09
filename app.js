@@ -12,10 +12,14 @@ var _ = require('underscore');
 
 var db = null;
 
+var error = "\x1b[31m%s\x1b[0m";
+var warn = "\x1b[33m%s\x1b[0m";
+
 mongo.connect(config.db.uri, function(err, database){
-	if(!err) db = database;
+	if(!err)
+		db = database;
 	else {
-		console.log('[ERROR]:', err, "\n\nExiting.");
+		console.log(error, "[Error]: Could not connect to MongoDB server. Exiting.");
 		process.exit();
 	}
 });
@@ -114,7 +118,8 @@ app.get('/tagged/:search([a-zA-Z0-9\-\_\.\+\,]+)', function(req, res){
 	var tags = req.params.search.split(','),
 		match = [],
 		unmatch = [],
-		pre = '^', post = '$'
+		pre = '^', post = '$';
+		
 	for(var tag of tags){
 		var target;
 		
@@ -183,5 +188,6 @@ var server =  app.listen(config.port, function(){
 		});
 	});
 	
-	console.log('Server', server.address().address, 'Listening on port', server.address().port);
+	console.log('Server', server.address().address,
+		'Listening on port', server.address().port);
 });

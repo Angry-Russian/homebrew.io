@@ -1,33 +1,40 @@
 angular.module(
-	'ngHomebrew', []
+	'ngHomebrew', ['ngTagsInput']
 
-).controller('homebrewController', function($scope){
+).controller('homebrewController', function($scope, $http){
 	console.log('123123123');
 
+	$scope.showEditor = false;
 	$scope.isLoggedIn = true;
 	$scope.user = {
 		name: "Tester Testingson",	
 		avatar: "//www.gravatar.com/avatar/00000000000000000000000000000000"
 	}
 
-	$scope.editorOverlay = $('<div id="editor"/>')
-	.addClass('modal-editor')
-	.append(
-		$('<div/>').froalaEditor({
-			heightMin: 350,
-			heightMax: window.innerHeight * 0.85,
-		}).prepend($('<input id="title" placeholder="Title" />'))
-	).hide();
-
-	$('body').append($scope.editorOverlay);
+	$scope.editorOverlay = $('div#editor');
+	$('div#editor .container textarea').froalaEditor({
+		heightMin: 350,
+		heightMax: window.innerHeight * 0.85,
+	});
 
 	$('li.button-new').on('click', function(){
-		console.log($scope.editorOverlay.fadeIn(80));
+		$scope.showEditor = !$scope.showEditor;
+		$scope.$apply();
 	});
 
 	$(document).on('keydown', function(e){
 		if(e.which == 27)
-			$scope.editorOverlay.fadeOut(80);
-	})
+			$scope.showEditor = false;
+		$scope.$apply();
+	});
 
+	$scope.tags = [
+		{ text: 'Tag1' },
+		{ text: 'Tag2' },
+		{ text: 'Tag3' }
+	];
+
+	$scope.loadTags = function(query) {
+		return $http.get('tags.json');
+	};
 });
